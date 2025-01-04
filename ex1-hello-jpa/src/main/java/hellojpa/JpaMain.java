@@ -4,8 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class JpaMain {
 
@@ -17,35 +15,21 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Team team = new Team();
-            team.setName("team1");
-            em.persist(team);
 
-            Member member1 = new Member();
-            member1.setName("member1");
-            member1.setTeam(team);
-            em.persist(member1);
+            Child child1 = new Child();
+            Child child2 = new Child();
 
-            Team teamB = new Team();
-            teamB.setName("teamB");
-            em.persist(teamB);
+            Parent newParent = new Parent();
+            newParent.addChild(child1);
+            newParent.addChild(child2);
 
-            Member member2 = new Member();
-            member2.setName("member2");
-            member2.setTeam(teamB);
-            em.persist(member2);
+            em.persist(newParent);
 
             em.flush();
             em.clear();
 
-            List<Member> memberList = em.createQuery("select m from Member m", Member.class).getResultList();
-            // N + 1문제 발생
-            // select MEMBER -> 1회
-            // select TEAM -> N회
-
-
-
-
+            Parent parent = em.find(Parent.class, newParent.getId());
+            parent.getChildList().remove(0);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
