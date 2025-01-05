@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            paging(em);
+            leftJoin(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -130,5 +130,41 @@ public class JpaMain {
         for (Member member1 : result) {
             System.out.println(member1.getAge());
         }
+    }
+
+    private static void innerJoin(EntityManager em) {
+        Team team = new Team("team");
+        em.persist(team);
+
+        Member member = new Member();
+        member.setAge(10);
+        member.setUsername("name" + 1);
+        member.changeTeam(team);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        List<Member> result = em.createQuery("SELECT m FROM Member m join m.team t ", Member.class)
+            .getResultList();
+
+    }
+
+    private static void leftJoin(EntityManager em) {
+        Team team = new Team("team");
+        em.persist(team);
+
+        Member member = new Member();
+        member.setAge(10);
+        member.setUsername("name" + 1);
+        member.changeTeam(team);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        List<Member> result = em.createQuery("SELECT m FROM Member m left join m.team t ", Member.class)
+                .getResultList();
+
     }
 }
