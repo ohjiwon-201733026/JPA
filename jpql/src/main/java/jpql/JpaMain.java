@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            jpqlType(em);
+            coalesce(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -186,6 +186,70 @@ public class JpaMain {
             System.out.println("objects = " + objects[1]);
             System.out.println("objects = " + objects[2]);
             
+        }
+    }
+
+    /*
+        기본 CASE
+     */
+    private static void case1(EntityManager em) {
+        Member member = new Member();
+        member.setAge(10);
+        member.setUsername("name" + 1);
+        member.setMemberType(MemberType.ADMIN);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        String query = "select " +
+                " case when m.age <= 10 then '학생'" +
+                " when m.age >= 60 then '경로'" +
+                " else '일반' " +
+                "end " +
+                " from Member m";
+        List<String> resultList = em.createQuery(query)
+                .getResultList();
+
+        for (String result : resultList) {
+            System.out.println(result);
+        }
+    }
+
+    private static void coalesce(EntityManager em) {
+        Member member = new Member();
+        member.setAge(10);
+        member.setMemberType(MemberType.ADMIN);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        String query = "select coalesce(m.username, '이름없는 회원') from Member m";
+        List<String> resultList = em.createQuery(query)
+                .getResultList();
+
+        for (String result : resultList) {
+            System.out.println(result);
+        }
+    }
+
+    private static void nullif(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("관리자");
+        member.setAge(10);
+        member.setMemberType(MemberType.ADMIN);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        String query = "select nullif(m.username, '관리자') from Member m";
+        List<String> resultList = em.createQuery(query)
+                .getResultList();
+
+        for (String result : resultList) {
+            System.out.println(result);
         }
     }
 }
