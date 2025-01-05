@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            scalarProjection(em);
+            paging(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -108,5 +108,27 @@ public class JpaMain {
         List<MemberDTO> list = em.createQuery("SELECT new jpql.MemberDTO(m.username, m.age) FROM Member m", MemberDTO.class)
                 .getResultList();
         System.out.println(list.get(0).getAge());
+    }
+
+    private static void paging(EntityManager em) {
+        for(int i = 1; i <= 100; i++) {
+            Member member = new Member();
+            member.setAge(i);
+            member.setUsername("name" + i);
+            em.persist(member);
+        }
+
+        em.flush();
+        em.clear();
+
+        List<Member> result = em.createQuery("SELECT m FROM Member m order by m.age desc", Member.class)
+                .setFirstResult(0)
+                .setMaxResults(10)
+                .getResultList();
+
+        System.out.println("size = " + result.size());
+        for (Member member1 : result) {
+            System.out.println(member1.getAge());
+        }
     }
 }
