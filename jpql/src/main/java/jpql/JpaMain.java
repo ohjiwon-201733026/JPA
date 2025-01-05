@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            leftJoin(em);
+            jpqlType(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -165,6 +165,27 @@ public class JpaMain {
 
         List<Member> result = em.createQuery("SELECT m FROM Member m left join m.team t ", Member.class)
                 .getResultList();
+    }
 
+    public static void jpqlType(EntityManager em) {
+        Member member = new Member();
+        member.setAge(10);
+        member.setUsername("name" + 1);
+        member.setMemberType(MemberType.ADMIN);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        List<Object[]> resultList = em.createQuery("SELECT 'HELLO', TRUE, m.username FROM Member m " +
+                        "where m.memberType = jpql.MemberType.ADMIN")
+                .getResultList();
+
+        for (Object[] objects : resultList) {
+            System.out.println("objects = " + objects[0]);
+            System.out.println("objects = " + objects[1]);
+            System.out.println("objects = " + objects[2]);
+            
+        }
     }
 }
