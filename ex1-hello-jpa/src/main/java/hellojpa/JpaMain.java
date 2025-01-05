@@ -17,22 +17,11 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Address address = new Address("city", "state", "zip");
+            Address address1 = new Address("city", "state", "zip");
+            Address address2 = new Address("city", "state", "zip");
 
-            Member member1 = new Member();
-            member1.setName("name");
-            member1.setHomeAddress(address);
-            member1.setWorkPeriod(new Period(LocalDateTime.now(), LocalDateTime.now()));
-
-            Member member2 = new Member();
-            member2.setName("name");
-            member2.setHomeAddress(address);
-            member2.setWorkPeriod(new Period(LocalDateTime.now(), LocalDateTime.now()));
-
-            em.persist(member1);
-            em.persist(member2);
-
-//            member1.getHomeAddress().setCity("NYC");
+            System.out.println("address1 == address2 : " + ( address1 == address2 ));
+            System.out.println("address1 equals address2 : " + ( address1.equals(address2) ));
 
             tx.commit();
         } catch (Exception e) {
