@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            routeExpression(em);
+            fetchJoin2(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -273,6 +273,78 @@ public class JpaMain {
 //        String query3 = "select t.members.name from Team t";     // 컬렉션값연관경로 - X
         Integer result = em.createQuery(query3, Integer.class).getSingleResult();
         System.out.println(result);
+
+    }
+
+    private static void fetchJoin1(EntityManager em) {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("member1");
+        member1.setTeam(teamA);
+        Member member2 = new Member("member2");
+        member2.setTeam(teamA);
+        Member member3 = new Member("member3");
+        member3.setTeam(teamB);
+
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+
+        em.flush();
+        em.clear();
+
+        String query = "select m from Member m";
+        List<Member> result = em.createQuery(query, Member.class).getResultList();  // 1
+        System.out.println(result.size());
+        for (Member member : result) {
+            System.out.println(member.getUsername() + " , " + member.getTeam().getName());  // N (member에 대한 Team조회)
+            // 즉시, 지연로딩 모두 발생
+        }
+
+        em.flush();
+        em.clear();
+        System.out.println(" ===== fetch join ===== ");
+
+        String query2 = "select m from Member m join fetch m.team";
+        List<Member> result2 = em.createQuery(query2, Member.class).getResultList(); // 1번에 조회
+        System.out.println(result2.size());
+        for (Member member : result2) {
+            System.out.println(member.getUsername() + " , " + member.getTeam().getName());
+        }
+    }
+
+    private static void fetchJoin2(EntityManager em) {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("member1");
+        member1.setTeam(teamA);
+        Member member2 = new Member("member2");
+        member2.setTeam(teamA);
+        Member member3 = new Member("member3");
+        member3.setTeam(teamB);
+
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+
+        em.flush();
+        em.clear();
+
+        String query = "select t from Team t join fetch t.members";
+        List<Team> result = em.createQuery(query, Team.class).getResultList();  // 1
+        System.out.println(result.size());
+        for (Team team : result) {
+            System.out.println(team.getName() + " , " + team.getMemberList().size());  // N (member에 대한 Team조회)
+            // 즉시, 지연로딩 모두 발생
+        }
 
     }
 }

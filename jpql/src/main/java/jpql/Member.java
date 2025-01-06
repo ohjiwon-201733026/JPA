@@ -16,6 +16,13 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
+    public Member() {
+    }
+
+    public Member(String username) {
+        this.username = username;
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,5 +66,16 @@ public class Member {
 
     public void setMemberType(MemberType memberType) {
         this.memberType = memberType;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", age=" + age +
+                ", team=" + team.getName() +
+                ", memberType=" + memberType +
+                '}';
     }
 }
