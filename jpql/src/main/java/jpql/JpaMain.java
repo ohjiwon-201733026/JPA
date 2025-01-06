@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            coalesce(em);
+            routeExpression(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -251,5 +251,28 @@ public class JpaMain {
         for (String result : resultList) {
             System.out.println(result);
         }
+    }
+
+    private static void routeExpression(EntityManager em) {
+        Team team = new Team("team");
+        em.persist(team);
+
+        Member member = new Member();
+        member.setUsername("관리자");
+        member.setAge(10);
+        member.changeTeam(team);
+        member.setMemberType(MemberType.ADMIN);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        String query1 = "select m.username from Member m";  // 상태필드
+        String query2 = "select m.team from Member m";      // 단일값 연관 경로
+        String query3 = "select t.members from Team t";     // 컬렉션값연관경로
+//        String query3 = "select t.members.name from Team t";     // 컬렉션값연관경로 - X
+        Integer result = em.createQuery(query3, Integer.class).getSingleResult();
+        System.out.println(result);
+
     }
 }
