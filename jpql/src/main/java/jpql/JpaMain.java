@@ -16,7 +16,7 @@ public class JpaMain {
         tx.begin();
 
         try {
-            fetchJoin2(em);
+            bulkInsert(em);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -346,5 +346,36 @@ public class JpaMain {
             // 즉시, 지연로딩 모두 발생
         }
 
+    }
+
+    private static void bulkInsert(EntityManager em) {
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("member1");
+        member1.setTeam(teamA);
+        Member member2 = new Member("member2");
+        member2.setTeam(teamA);
+        Member member3 = new Member("member3");
+        member3.setTeam(teamB);
+
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+
+        // FLUSH 자동 호 (commit 또는 쿼리)
+        String query = "update Member m set m.age = 20";
+        int result = em.createQuery(query).executeUpdate();
+        System.out.println(result);
+
+        System.out.println("age = " + member1.getAge());
+
+        em.clear();
+        Member findMember = em.find(Member.class, member1.getId());
+        System.out.println("findMember age = " + findMember.getAge());
     }
 }
