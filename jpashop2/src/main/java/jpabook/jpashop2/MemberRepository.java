@@ -2,6 +2,7 @@ package jpabook.jpashop2;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jpabook.jpashop2.domain.Member;
 import org.springframework.stereotype.Repository;
 
 @Repository
